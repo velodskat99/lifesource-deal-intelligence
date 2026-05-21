@@ -1,5 +1,6 @@
 import pytest
 from httpx import ASGITransport, AsyncClient
+from pathlib import Path
 
 
 @pytest.fixture
@@ -40,3 +41,15 @@ async def test_savings_page_has_no_baked_in_personal_receipts(client):
     assert "CHOBANI" not in response.text
     assert "DUMPLING" not in response.text
     assert "Costco receipts" not in response.text
+
+
+def test_hmart_weekly_launchd_templates_are_installed():
+    root = Path(__file__).resolve().parents[1]
+    monitor = root / "launchd" / "com.lifesource.hmart-weekly-monitor.plist"
+    digest = root / "launchd" / "com.lifesource.hmart-weekly-digest.plist"
+    installer = (root / "scripts" / "install-launchd.sh").read_text()
+
+    assert monitor.exists()
+    assert digest.exists()
+    assert "com.lifesource.hmart-weekly-monitor.plist" in installer
+    assert "com.lifesource.hmart-weekly-digest.plist" in installer
