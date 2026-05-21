@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="LifeSource">
+  <rect width="512" height="512" rx="112" fill="#1c1917"/>
+  <path d="M152 150h208v46H206v84c0 55 31 86 83 86 28 0 54-8 78-24v50c-25 14-55 21-89 21-79 0-126-47-126-127V150Z" fill="#faf9f7"/>
+  <path d="M205 104c63 5 113 34 151 87-63-3-113-32-151-87Z" fill="#b7461a"/>
+  <circle cx="334" cy="316" r="31" fill="#b7461a"/>
+</svg>

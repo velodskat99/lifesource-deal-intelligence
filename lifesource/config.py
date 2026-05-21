@@ -1,7 +1,7 @@
-import os
 from functools import lru_cache
 from pathlib import Path
 
+from pydantic import Field
 from pydantic_settings import BaseSettings
 
 
@@ -23,6 +23,7 @@ class Settings(BaseSettings):
     # Server
     host: str = "127.0.0.1"
     port: int = 8000
+    access_pin: str | None = Field(default=None, validation_alias="LIFESOURCE_ACCESS_PIN")
 
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
 

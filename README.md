@@ -33,6 +33,9 @@ Fill in `.env`:
 TELEGRAM_BOT_TOKEN=
 TELEGRAM_CHAT_ID=
 ANTHROPIC_API_KEY=
+HOST=127.0.0.1
+PORT=8000
+LIFESOURCE_ACCESS_PIN=
 ```
 
 ## Run
@@ -42,6 +45,35 @@ python -m lifesource
 ```
 
 Open `http://localhost:8000`.
+
+## Phone App Mode
+
+LifeSource can run like a local phone app as a Progressive Web App (PWA).
+Your Mac hosts the app, and your phone opens it over the same Wi-Fi network.
+
+1. Set a local access PIN and allow LAN connections:
+
+```bash
+HOST=0.0.0.0
+LIFESOURCE_ACCESS_PIN=choose-a-private-pin
+```
+
+2. Start LifeSource on your Mac:
+
+```bash
+python -m lifesource
+```
+
+3. Find your Mac's local IP address:
+
+```bash
+ipconfig getifaddr en0
+```
+
+4. On your phone, open `http://<your-mac-ip>:8000`, enter the PIN, then use
+   **Add to Home Screen** from the browser share menu.
+
+Keep `HOST=127.0.0.1` when you only want access from the Mac itself.
 
 Run the daily scrape/digest job:
 
