@@ -259,28 +259,6 @@ def create_dashboard_router(db_path: str) -> APIRouter:
             coupon_savings = []
             total_coupon_savings = 0.0
 
-            # From Costco receipts - items that had coupons applied
-            # CHOBANI YGRT was 16.99, paid 10.99 (coupon -6.00)
-            # DUMPLING was 14.99, paid 10.99 (coupon -4.00)
-            # CANADN BACON was 9.99, paid 6.69 (coupon -3.30)
-            # BACHAN'S was 9.79, paid 6.79 (coupon -3.00)
-            # QUAKERGRANOL was 9.99, paid 7.49 (coupon -2.50)
-            # AVOCADOS was 4.39, paid 3.19 (coupon -1.20)
-            known_coupons = [
-                ("CHOBANI YGRT", "2026-03-24", 6.00),
-                ("DUMPLING", "2026-03-24", 4.00),
-                ("DUMPLING", "2026-03-14", 4.00),
-                ("CANADN BACON", "2026-01-27", 3.30),
-                ("BACHAN'S", "2026-01-27", 3.00),
-                ("QUAKERGRANOL", "2026-02-18", 2.50),
-                ("AVOCADOS", "2026-02-18", 1.20),
-            ]
-            for name, date, discount in known_coupons:
-                coupon_savings.append({
-                    "name": name, "date": date, "discount": discount
-                })
-                total_coupon_savings += discount
-
             # --- 2. Cross-store price comparison ---
             cross_store_savings = []
 

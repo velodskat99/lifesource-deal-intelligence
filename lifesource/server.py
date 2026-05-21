@@ -13,6 +13,7 @@ from lifesource.api.watchlist import create_watchlist_router
 from lifesource.api.analytics import create_analytics_router
 from lifesource.api.settings import create_settings_router
 from lifesource.dashboard.routes import create_dashboard_router
+from lifesource.db import init_db
 
 
 def create_app(db_path: str | None = None) -> FastAPI:
@@ -20,6 +21,8 @@ def create_app(db_path: str | None = None) -> FastAPI:
     if db_path is None:
         from lifesource.config import get_settings
         db_path = get_settings().db_path
+
+    init_db(db_path)
 
     app = FastAPI(title="LifeSource", version="0.1.0")
 

@@ -38,7 +38,7 @@ ANTHROPIC_API_KEY=
 ## Run
 
 ```bash
-python -m lifesource.server
+python -m lifesource
 ```
 
 Open `http://localhost:8000`.

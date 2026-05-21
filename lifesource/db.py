@@ -71,11 +71,47 @@ CREATE TABLE IF NOT EXISTS shopping_list (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS gas_stations (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    address TEXT,
+    regular_price REAL NOT NULL,
+    lat REAL DEFAULT 0,
+    lng REAL DEFAULT 0,
+    zone TEXT,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS gas_price_history (
+    id INTEGER PRIMARY KEY,
+    station_id INTEGER REFERENCES gas_stations(id),
+    regular_price REAL NOT NULL,
+    date DATE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS watchlist (
+    id INTEGER PRIMARY KEY,
+    query TEXT NOT NULL,
+    target_price REAL,
+    include_used BOOLEAN DEFAULT TRUE,
+    best_price_new REAL,
+    best_source_new TEXT,
+    best_price_used REAL,
+    best_source_used TEXT,
+    active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE INDEX IF NOT EXISTS idx_deals_store ON deals(store);
 CREATE INDEX IF NOT EXISTS idx_deals_end_date ON deals(end_date);
 CREATE INDEX IF NOT EXISTS idx_deals_product_id ON deals(product_id);
 CREATE INDEX IF NOT EXISTS idx_purchase_history_product_id ON purchase_history(product_id);
 CREATE INDEX IF NOT EXISTS idx_price_history_product_id ON price_history(product_id);
+CREATE INDEX IF NOT EXISTS idx_gas_stations_zone ON gas_stations(zone);
+CREATE INDEX IF NOT EXISTS idx_gas_price_history_station_id ON gas_price_history(station_id);
+CREATE INDEX IF NOT EXISTS idx_watchlist_active ON watchlist(active);
 """
 
 
