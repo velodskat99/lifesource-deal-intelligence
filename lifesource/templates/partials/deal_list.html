@@ -1,0 +1,9 @@
+{% for deal in deals %}
+    {% include "partials/deal_card.html" %}
+{% endfor %}
+{% if not deals %}
+<div style="text-align:center;padding:4rem 0;color:var(--ink-muted)">
+    <div style="font-size:2rem;margin-bottom:0.5rem">🔍</div>
+    <p>No deals match your filters. Try a different store or search term.</p>
+</div>
+{% endif %}

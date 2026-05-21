@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Purchases — LifeSource{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>Purchase Log</h1>
+        <p class="subtitle">Track what you buy to improve deal recommendations</p>
+    </div>
+</div>
+
+<div class="form-card">
+    <h2>Log a Purchase</h2>
+    <form hx-post="/partials/purchases/create" hx-target="#purchase-list" hx-swap="innerHTML"
+          hx-on::after-request="this.reset()">
+        <div class="form-grid">
+            <input name="item_name" placeholder="Item name" required>
+            <select name="store" required>
+                <option value="heb">H-E-B</option>
+                <option value="costco">Costco</option>
+                <option value="99ranch">99 Ranch</option>
+                <option value="hmart">H Mart</option>
+                <option value="traderjoes">Trader Joe's</option>
+            </select>
+            <input name="price" type="number" step="0.01" placeholder="Price" required>
+            <input name="purchase_date" type="date" required>
+            <input name="quantity" type="number" step="0.01" value="1" placeholder="Qty">
+            <input name="unit" placeholder="Unit (each, lb…)">
+        </div>
+        <button type="submit" class="btn btn-primary" style="margin-top:0.85rem">Log Purchase</button>
+    </form>
+</div>
+
+<div class="section-label">Recent Purchases</div>
+<div id="purchase-list">
+    {% include "partials/purchase_list.html" %}
+</div>
+{% endblock %}

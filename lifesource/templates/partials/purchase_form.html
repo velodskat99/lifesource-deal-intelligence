@@ -1,0 +1,33 @@
+<form
+    hx-post="/partials/purchases/create"
+    hx-target="#purchase-list"
+    hx-swap="innerHTML"
+    hx-on::after-request="this.reset()"
+    class="bg-white rounded-lg shadow-sm border p-4 space-y-3"
+>
+    <h2 class="font-semibold text-gray-900">Log Purchase</h2>
+    <div class="grid grid-cols-2 gap-3">
+        <input name="item_name" placeholder="Item name" required
+               class="border rounded px-3 py-1.5 text-sm">
+        <select name="store" required class="border rounded px-3 py-1.5 text-sm">
+            <option value="heb">H-E-B</option>
+            <option value="costco">Costco</option>
+            <option value="99ranch">99 Ranch</option>
+            <option value="hmart">H Mart</option>
+            <option value="traderjoes">Trader Joe's</option>
+        </select>
+        <input name="price" type="number" step="0.01" placeholder="Price" required
+               class="border rounded px-3 py-1.5 text-sm">
+        <input name="purchase_date" type="date" required
+               class="border rounded px-3 py-1.5 text-sm">
+        <input name="quantity" type="number" step="0.01" value="1"
+               class="border rounded px-3 py-1.5 text-sm">
+        <input name="unit" placeholder="Unit (each, lb, oz...)"
+               class="border rounded px-3 py-1.5 text-sm">
+    </div>
+    <input type="hidden" name="source" value="manual">
+    <button type="submit"
+            class="bg-green-700 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-green-800">
+        Log Purchase
+    </button>
+</form>

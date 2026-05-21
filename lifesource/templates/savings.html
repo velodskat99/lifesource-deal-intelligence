@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block title %}Savings — LifeSource{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>Real Savings</h1>
+        <p class="subtitle">What you actually saved by shopping smart</p>
+    </div>
+</div>
+
+<div class="stats-row">
+    <div class="stat-card">
+        <div class="stat-value" style="color:var(--save)">${{ "%.2f" | format(total_saved) }}</div>
+        <div class="stat-label">Total Saved</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">${{ "%.2f" | format(total_spent) }}</div>
+        <div class="stat-label">You Paid</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">${{ "%.2f" | format(total_would_have) }}</div>
+        <div class="stat-label">Would Have Paid</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ savings_pct }}%</div>
+        <div class="stat-label">Avg Savings Rate</div>
+    </div>
+</div>
+
+<!-- Cross-store price comparison -->
+{% if cross_store_savings %}
+<div class="section-label" style="margin-top:2rem">Cross-Store Price Wins</div>
+<p style="font-size:0.82rem;color:var(--ink-muted);margin-bottom:0.75rem">
+    Items where you bought at the cheapest store vs what other stores charge
+</p>
+{% for item in cross_store_savings %}
+<div class="savings-item">
+    <div class="savings-top">
+        <div>
+            <span style="font-weight:600">{{ item.name | title }}</span>
+            <div class="savings-detail">
+                Bought {{ item.times }}x at
+                <span class="store-tag {{ item.store }}">
+                    {% if item.store == 'heb' %}H-E-B{% elif item.store == 'costco' %}Costco{% elif item.store == '99ranch' %}99 Ranch{% elif item.store == 'hmart' %}H Mart{% elif item.store == 'traderjoes' %}Trader Joe's{% else %}{{ item.store }}{% endif %}
+                </span>
+                for ${{ "%.2f" | format(item.your_price) }} avg
+            </div>
+            {% if item.alt_prices %}
+            <div class="savings-detail savings-alt">
+                {% for alt in item.alt_prices %}
+                <span>
+                    {{ alt.store_name }}: ${{ "%.2f" | format(alt.price) }}
+                    {% if alt.price > item.your_price %}
+                    <span class="savings-plus">+${{ "%.2f" | format(alt.price - item.your_price) }}</span>
+                    {% elif alt.price < item.your_price %}
+                    <span class="savings-minus">-${{ "%.2f" | format(item.your_price - alt.price) }}</span>
+                    {% endif %}
+                </span>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+            {% if item.saved > 0 %}
+            <div class="savings-amount">+${{ "%.2f" | format(item.saved) }}</div>
+            <div class="savings-label">saved</div>
+            {% else %}
+            <div style="font-size:0.78rem;color:var(--ink-muted)">best price</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+
+<!-- Coupon savings -->
+{% if coupon_savings %}
+<div class="section-label" style="margin-top:2.25rem">Instant Savings from Coupons</div>
+<p style="font-size:0.82rem;color:var(--ink-muted);margin-bottom:0.75rem">
+    Discounts applied at checkout (from Costco receipts)
+</p>
+{% for item in coupon_savings %}
+<div class="list-item">
+    <div>
+        <span style="font-weight:500">{{ item.name }}</span>
+        <span style="font-size:0.72rem;color:var(--ink-muted);margin-left:0.4rem">{{ item.date }}</span>
+    </div>
+    <span style="font-family:'DM Serif Display',serif;color:var(--save)">-${{ "%.2f" | format(item.discount) }}</span>
+</div>
+{% endfor %}
+<div style="padding:0.85rem 0;border-top:1px solid var(--border-strong);margin-top:0.35rem">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-weight:600;font-size:0.9rem">Total Coupon Savings</span>
+        <span style="font-family:'DM Serif Display',serif;font-size:1.15rem;color:var(--save)">
+            ${{ "%.2f" | format(total_coupon_savings) }}
+        </span>
+    </div>
+</div>
+{% endif %}
+
+<!-- Potential savings -->
+{% if potential_savings %}
+<div class="section-label" style="margin-top:2.25rem">Potential Savings This Week</div>
+<p style="font-size:0.82rem;color:var(--ink-muted);margin-bottom:0.75rem">
+    Items you regularly buy that are on sale right now
+</p>
+{% for item in potential_savings %}
+<div class="list-item" style="padding:0.7rem 0">
+    <div>
+        <span style="font-weight:500">{{ item.deal_name }}</span>
+        <span class="store-tag {{ item.store }}" style="margin-left:0.4rem">
+            {% if item.store == 'heb' %}H-E-B{% elif item.store == 'costco' %}Costco{% elif item.store == '99ranch' %}99 Ranch{% elif item.store == 'hmart' %}H Mart{% elif item.store == 'traderjoes' %}Trader Joe's{% else %}{{ item.store }}{% endif %}
+        </span>
+        <div style="font-size:0.72rem;color:var(--ink-muted);margin-top:0.15rem">
+            You usually pay ${{ "%.2f" | format(item.your_avg) }} · Now ${{ "%.2f" | format(item.deal_price) }}
+        </div>
+    </div>
+    <span style="font-family:'DM Serif Display',serif;color:var(--save);font-size:1.05rem;flex-shrink:0">
+        Save ${{ "%.2f" | format(item.your_avg - item.deal_price) }}
+    </span>
+</div>
+{% endfor %}
+{% endif %}
+
+{% if not cross_store_savings and not coupon_savings and not potential_savings %}
+<div class="empty-state">
+    <div class="empty-state-icon">💰</div>
+    <p>Start logging purchases to track your savings over time.</p>
+</div>
+{% endif %}
+{% endblock %}

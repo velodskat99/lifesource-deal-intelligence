@@ -1,0 +1,17 @@
+{% for p in purchases %}
+<div class="list-item">
+    <div>
+        <span style="font-weight:500">{{ p.item_name | title }}</span>
+        <span class="store-tag {{ p.store }}" style="margin-left:0.4rem">
+            {% if p.store == 'heb' %}H-E-B{% elif p.store == 'costco' %}Costco{% elif p.store == '99ranch' %}99 Ranch{% elif p.store == 'hmart' %}H Mart{% elif p.store == 'traderjoes' %}Trader Joe's{% else %}{{ p.store }}{% endif %}
+        </span>
+    </div>
+    <div style="text-align:right">
+        <span style="font-weight:600">${{ "%.2f" | format(p.price) }}</span>
+        <span style="font-size:0.75rem;color:var(--ink-muted);margin-left:0.5rem">{{ p.purchase_date }}</span>
+    </div>
+</div>
+{% endfor %}
+{% if not purchases %}
+<div style="text-align:center;padding:3rem 0;color:var(--ink-muted)">No purchases logged yet.</div>
+{% endif %}

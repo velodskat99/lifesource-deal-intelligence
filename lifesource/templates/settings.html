@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Settings — LifeSource{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>Settings</h1>
+    </div>
+</div>
+
+<div class="content-card">
+    <h2>Active Stores</h2>
+    <div class="settings-group">
+        {% for store in ["heb", "costco", "99ranch", "hmart", "traderjoes"] %}
+        <label>
+            <input type="checkbox" {{ 'checked' if store in settings.get('active_stores', []) }}
+                   name="store" value="{{ store }}">
+            {% if store == "heb" %}H-E-B{% elif store == "costco" %}Costco{% elif store == "99ranch" %}99 Ranch{% elif store == "hmart" %}H Mart{% elif store == "traderjoes" %}Trader Joe's{% endif %}
+        </label>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="content-card">
+    <h2>Deal Score Threshold</h2>
+    <p class="hint" style="margin-bottom:0.65rem">Minimum score for a deal to appear in your Telegram digest.</p>
+    <input type="number" value="{{ settings.get('deal_score_threshold', 40) }}"
+           class="input" style="width:6rem"
+           hx-put="/api/settings" hx-trigger="change"
+           hx-vals='{"key": "deal_score_threshold"}'
+           name="value">
+</div>
+
+<div class="content-card">
+    <h2>Gas Price Zones</h2>
+    <p class="hint" style="margin-bottom:0.65rem">Zones to track gas prices around.</p>
+    {% for zone in settings.get('gas_zones', []) %}
+    <div class="settings-zones">
+        <input type="text" value="{{ zone.name }}" placeholder="Name" disabled style="width:8rem">
+        <input type="text" value="{{ zone.address }}" placeholder="Address" disabled style="flex:1;min-width:10rem">
+        <input type="number" value="{{ zone.radius_miles }}" placeholder="Miles" disabled style="width:5rem">
+    </div>
+    {% endfor %}
+    <p class="hint">Zone editing coming in a future update.</p>
+</div>
+
+<div class="content-card">
+    <h2>Manual Actions</h2>
+    <button hx-post="/api/job/run" class="btn btn-primary" style="margin-top:0.25rem">
+        Run Daily Job Now
+    </button>
+    <p class="hint">Triggers the daily scraping, scoring, and Telegram digest.</p>
+</div>
+{% endblock %}

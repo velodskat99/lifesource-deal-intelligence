@@ -1,0 +1,24 @@
+{% for item in items %}
+<div class="list-check-item {{ 'checked' if item.checked }}">
+    <div class="list-check-left">
+        <input type="checkbox" {{ 'checked' if item.checked }}
+               hx-patch="/api/shopping-list/{{ item.id }}/toggle"
+               hx-target="#list-items"
+               hx-swap="innerHTML">
+        <span {% if item.checked %}style="text-decoration:line-through;color:var(--ink-muted)"{% endif %}>
+            {{ item.item_name }}
+            {% if item.quantity != 1 %}<span class="item-qty">({{ item.quantity }} {{ item.unit or '' }})</span>{% endif %}
+        </span>
+    </div>
+    <button hx-delete="/api/shopping-list/{{ item.id }}"
+            hx-target="#list-items"
+            hx-swap="innerHTML"
+            class="btn-danger-text">Remove</button>
+</div>
+{% endfor %}
+{% if not items %}
+<div class="empty-state">
+    <div class="empty-state-icon">🛒</div>
+    <p>Your shopping list is empty. Add items above to get started.</p>
+</div>
+{% endif %}

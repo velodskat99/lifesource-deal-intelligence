@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Deals — LifeSource{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>This Week's Deals</h1>
+        <p class="subtitle">{{ deals | length }} deals across your stores</p>
+    </div>
+    <div class="filter-bar">
+        <select name="store"
+            hx-get="/partials/deals"
+            hx-target="#deal-list"
+            hx-include="[name='q']">
+            <option value="">All Stores</option>
+            <option value="heb">H-E-B</option>
+            <option value="costco">Costco</option>
+            <option value="99ranch">99 Ranch</option>
+            <option value="hmart">H Mart</option>
+            <option value="traderjoes">Trader Joe's</option>
+        </select>
+        <input type="search" name="q" placeholder="Search deals…"
+            hx-get="/partials/deals"
+            hx-target="#deal-list"
+            hx-trigger="keyup changed delay:300ms"
+            hx-include="[name='store']">
+    </div>
+</div>
+
+{% if categories %}
+<nav class="cat-nav">
+    {% for cat in categories %}
+    <a href="#cat-{{ cat.key }}" class="cat-pill">
+        <span>{{ cat.emoji }}</span>
+        <span>{{ cat.label }}</span>
+        <span class="count">{{ cat.count }}</span>
+    </a>
+    {% endfor %}
+</nav>
+{% endif %}
+
+<div id="deal-list">
+{% if categories %}
+    {% for cat in categories %}
+    <section id="cat-{{ cat.key }}" style="margin-bottom:2.25rem">
+        <div class="cat-header">
+            <span class="cat-header-emoji">{{ cat.emoji }}</span>
+            <span class="cat-header-label">{{ cat.label }}</span>
+            <span class="cat-header-count">{{ cat.count }} deals</span>
+        </div>
+        {% for deal in cat.deals %}
+            {% include "partials/deal_card.html" %}
+        {% endfor %}
+    </section>
+    {% endfor %}
+{% else %}
+    {% include "partials/deal_list.html" %}
+{% endif %}
+</div>
+{% endblock %}

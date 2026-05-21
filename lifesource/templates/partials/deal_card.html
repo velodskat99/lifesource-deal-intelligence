@@ -1,0 +1,48 @@
+<div class="deal-card animate-in">
+    {% if deal.image_url %}
+    <img data-src="{{ deal.image_url }}" alt="{{ deal.item_name }}" class="deal-img"
+         src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Crect fill='%23f0ece4' width='64' height='64'/%3E%3C/svg%3E"
+         loading="lazy"
+         onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+    <div class="deal-emoji" style="display:none">🛒</div>
+    {% else %}
+    <div class="deal-emoji">
+        {% if 'produce' in (deal.category or '')|lower or 'fruit' in (deal.category or '')|lower or 'vegetab' in (deal.category or '')|lower %}🥬
+        {% elif 'meat' in (deal.category or '')|lower and 'seafood' not in (deal.category or '')|lower %}🥩
+        {% elif 'seafood' in (deal.category or '')|lower %}🐟
+        {% elif 'dairy' in (deal.category or '')|lower or 'egg' in (deal.category or '')|lower %}🥛
+        {% elif 'bakery' in (deal.category or '')|lower or 'bread' in (deal.category or '')|lower %}🍞
+        {% elif 'beverage' in (deal.category or '')|lower or 'drink' in (deal.category or '')|lower %}🥤
+        {% elif 'frozen' in (deal.category or '')|lower %}🧊
+        {% elif 'pantry' in (deal.category or '')|lower %}🥫
+        {% elif 'household' in (deal.category or '')|lower or 'essential' in (deal.category or '')|lower %}🧹
+        {% else %}🛒{% endif %}
+    </div>
+    {% endif %}
+    <div class="deal-info">
+        <h3>{{ deal.item_name }}</h3>
+        <div class="deal-meta">
+            <span class="store-tag {{ deal.store }}">
+                {% if deal.store == 'heb' %}H-E-B{% elif deal.store == 'costco' %}Costco{% elif deal.store == '99ranch' %}99 Ranch{% elif deal.store == 'hmart' %}H Mart{% elif deal.store == 'traderjoes' %}Trader Joe's{% else %}{{ deal.store }}{% endif %}
+            </span>
+            <span>{{ deal.category or "" }}</span>
+            {% if deal.unit %}<span>per {{ deal.unit }}</span>{% endif %}
+        </div>
+        {% if deal.start_date and deal.end_date %}
+        <div class="deal-dates">{{ deal.start_date }} → {{ deal.end_date }}</div>
+        {% endif %}
+        {% if deal.match_reason %}
+        <div class="deal-match">↳ {{ deal.match_reason }}</div>
+        {% endif %}
+    </div>
+    <div class="deal-price">
+        <div class="current">${{ "%.2f" | format(deal.sale_price) }}</div>
+        {% if deal.regular_price and deal.regular_price > deal.sale_price %}
+        <div class="was">${{ "%.2f" | format(deal.regular_price) }}</div>
+        {% set pct = ((deal.regular_price - deal.sale_price) / deal.regular_price * 100) | int %}
+        <span class="badge badge-save">{{ pct }}% off</span>
+        {% elif not deal.regular_price %}
+        <span class="badge badge-deal">deal</span>
+        {% endif %}
+    </div>
+</div>

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Shopping Plan — LifeSource{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>Weekly Shopping Plan</h1>
+        <p class="subtitle">{{ plan.date }}</p>
+    </div>
+</div>
+
+{% if plan.total_savings > 0 %}
+<div class="alert alert-save">
+    <span class="alert-text">Estimated savings this week: ${{ "%.2f" | format(plan.total_savings) }}</span>
+</div>
+{% endif %}
+
+{% if plan.restock_items %}
+<div class="alert alert-warn">
+    <h2>Items Due for Restock</h2>
+    <ul>
+        {% for item in plan.restock_items %}
+        <li>{{ item.name }} {% if item.days_overdue > 0 %}({{ item.days_overdue }} days overdue){% else %}(due soon){% endif %}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+{% for store, data in plan.stores.items() %}
+<div class="store-plan-card">
+    <div class="store-plan-header">
+        <h2>{% if store == "heb" %}H-E-B{% elif store == "costco" %}Costco{% elif store == "99ranch" %}99 Ranch{% elif store == "hmart" %}H Mart{% elif store == "traderjoes" %}Trader Joe's{% else %}{{ store }}{% endif %}</h2>
+        {% if data.est_savings > 0 %}
+        <span class="store-plan-save">Save ${{ "%.2f" | format(data.est_savings) }}</span>
+        {% endif %}
+    </div>
+    <div class="store-plan-deals">
+        {% for deal in data.deals[:15] %}
+        <div class="store-plan-row">
+            <span>{{ deal.item_name }}</span>
+            <div>
+                <span class="deal-current">${{ "%.2f" | format(deal.sale_price) }}</span>
+                {% if deal.regular_price %}
+                <span class="deal-was">${{ "%.2f" | format(deal.regular_price) }}</span>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endfor %}
+
+{% if plan.skip_stores %}
+<p style="color:var(--ink-muted);font-size:0.82rem;margin-top:1.25rem">
+    Skip this week: {{ plan.skip_stores | join(", ") | upper }}
+</p>
+{% endif %}
+
+{% if not plan.stores %}
+<div class="empty-state">
+    <div class="empty-state-icon">📋</div>
+    <p>No deals available yet. Run the daily job first.</p>
+</div>
+{% endif %}
+{% endblock %}

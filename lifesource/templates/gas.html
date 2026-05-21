@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Gas Prices — LifeSource{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>Gas Prices</h1>
+        <p class="subtitle">Nearby stations sorted by price</p>
+    </div>
+</div>
+
+{% for station in stations %}
+<div class="gas-card animate-in">
+    <div>
+        <div class="gas-name">{{ station.name }}</div>
+        <div class="gas-address">{{ station.address or station.zone }}</div>
+    </div>
+    <div>
+        <div class="gas-price-val {{ 'gas-cheap' if station.regular_price < avg_price else 'gas-mid' if station.regular_price == avg_price else 'gas-exp' }}">
+            ${{ "%.2f" | format(station.regular_price) }}
+        </div>
+        <div class="gas-price-label">Regular</div>
+    </div>
+</div>
+{% endfor %}
+
+{% if not stations %}
+<div class="empty-state">
+    <div class="empty-state-icon">⛽</div>
+    <p>No gas price data yet. Run the daily job to fetch nearby prices.</p>
+</div>
+{% endif %}
+{% endblock %}

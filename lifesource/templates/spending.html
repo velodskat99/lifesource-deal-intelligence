@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Spending — LifeSource{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>Spending</h1>
+        <p class="subtitle">Last {{ spending.period_months }} months of purchases</p>
+    </div>
+</div>
+
+<div class="stats-row">
+    <div class="stat-card">
+        <div class="stat-value">${{ "%.0f" | format(spending.total_spent) }}</div>
+        <div class="stat-label">Total Spent</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ spending.by_store | length }}</div>
+        <div class="stat-label">Stores</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ spending.top_items | length }}+</div>
+        <div class="stat-label">Unique Items</div>
+    </div>
+</div>
+
+<div class="spend-grid">
+    <div>
+        <div class="section-label">By Store</div>
+        {% for row in spending.by_store %}
+        <div class="list-item">
+            <div style="display:flex;align-items:center;gap:0.5rem">
+                <span class="store-tag {{ row.store }}">
+                    {% if row.store == 'heb' %}H-E-B{% elif row.store == 'costco' %}Costco{% elif row.store == '99ranch' %}99 Ranch{% elif row.store == 'hmart' %}H Mart{% elif row.store == 'traderjoes' %}Trader Joe's{% else %}{{ row.store | upper }}{% endif %}
+                </span>
+                <span style="font-size:0.78rem;color:var(--ink-muted)">{{ row["items"] }} items</span>
+            </div>
+            <span style="font-weight:600;font-size:0.9rem">${{ "%.2f" | format(row.total) }}</span>
+        </div>
+        {% endfor %}
+    </div>
+    <div>
+        <div class="section-label">By Month</div>
+        {% for row in spending.by_month %}
+        <div class="list-item">
+            <span style="font-size:0.85rem">{{ row.month }}</span>
+            <span style="font-weight:600;font-size:0.9rem">${{ "%.2f" | format(row.total) }}</span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="section-label">Top Items by Spend</div>
+{% for item in spending.top_items %}
+<div class="list-item">
+    <div>
+        <span style="font-weight:500">{{ item.item_name | title }}</span>
+        <span style="font-size:0.72rem;color:var(--ink-muted);margin-left:0.4rem">{{ item.times_bought }}x · avg ${{ "%.2f" | format(item.avg_price) }}</span>
+    </div>
+    <span style="font-family:'DM Serif Display',serif;font-size:1.05rem">${{ "%.2f" | format(item.total_spent) }}</span>
+</div>
+{% endfor %}
+{% endblock %}
