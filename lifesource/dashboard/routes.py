@@ -251,7 +251,6 @@ def create_dashboard_router(db_path: str) -> APIRouter:
         STORE_NAMES = {
             "heb": "H-E-B", "costco": "Costco",
             "99ranch": "99 Ranch", "hmart": "H Mart",
-            "traderjoes": "Trader Joe's",
         }
 
         with get_db(db_path) as conn:

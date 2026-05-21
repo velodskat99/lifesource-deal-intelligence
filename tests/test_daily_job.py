@@ -11,7 +11,6 @@ def _mock_all_scrapers():
         patch("lifesource.daily.job.CostcoScraper"),
         patch("lifesource.daily.job.Ranch99Scraper"),
         patch("lifesource.daily.job.HmartScraper"),
-        patch("lifesource.daily.job.TraderJoesScraper"),
         patch("lifesource.daily.job.send_telegram_message", new_callable=AsyncMock),
         patch("lifesource.daily.job.get_settings"),
         patch("lifesource.daily.job.backup_database"),
@@ -39,7 +38,6 @@ def test_run_daily_job_scrapes_and_stores(tmp_db):
         patch("lifesource.daily.job.CostcoScraper") as MockCostco,
         patch("lifesource.daily.job.Ranch99Scraper") as MockRanch99,
         patch("lifesource.daily.job.HmartScraper") as MockHmart,
-        patch("lifesource.daily.job.TraderJoesScraper") as MockTraderJoes,
         patch("lifesource.daily.job.send_telegram_message", new_callable=AsyncMock),
         patch("lifesource.daily.job.get_settings") as mock_settings,
         patch("lifesource.daily.job.backup_database"),
@@ -56,7 +54,6 @@ def test_run_daily_job_scrapes_and_stores(tmp_db):
         MockCostco.return_value.scrape.return_value = []
         MockRanch99.return_value.scrape.return_value = []
         MockHmart.return_value.scrape.return_value = []
-        MockTraderJoes.return_value.scrape.return_value = []
 
         result = run_daily_job(db_path=tmp_db)
 
@@ -84,7 +81,6 @@ def test_run_daily_job_handles_scraper_failure(tmp_db):
         patch("lifesource.daily.job.CostcoScraper") as MockCostco,
         patch("lifesource.daily.job.Ranch99Scraper") as MockRanch99,
         patch("lifesource.daily.job.HmartScraper") as MockHmart,
-        patch("lifesource.daily.job.TraderJoesScraper") as MockTraderJoes,
         patch("lifesource.daily.job.send_telegram_message", new_callable=AsyncMock),
         patch("lifesource.daily.job.get_settings") as mock_settings,
         patch("lifesource.daily.job.backup_database"),
@@ -101,7 +97,6 @@ def test_run_daily_job_handles_scraper_failure(tmp_db):
         MockCostco.return_value.scrape.return_value = []
         MockRanch99.return_value.scrape.return_value = []
         MockHmart.return_value.scrape.return_value = []
-        MockTraderJoes.return_value.scrape.return_value = []
 
         result = run_daily_job(db_path=tmp_db)
 

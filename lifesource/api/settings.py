@@ -3,7 +3,6 @@ import json
 
 from fastapi import APIRouter
 from pydantic import BaseModel
-from typing import Optional
 
 from lifesource.db import get_db
 
@@ -21,7 +20,7 @@ DEFAULT_SETTINGS = {
     "gas_zones": json.dumps([
         {"name": "home", "address": "Your city, ST", "radius_miles": 5},
     ]),
-    "active_stores": json.dumps(["heb", "costco", "99ranch", "hmart", "traderjoes"]),
+    "active_stores": json.dumps(["heb", "costco", "99ranch", "hmart"]),
     "deal_score_threshold": "40",
     "telegram_digest_sections": json.dumps(["deals", "gas", "watchlist", "plan"]),
 }

@@ -28,7 +28,7 @@
 {% for store, data in plan.stores.items() %}
 <div class="store-plan-card">
     <div class="store-plan-header">
-        <h2>{% if store == "heb" %}H-E-B{% elif store == "costco" %}Costco{% elif store == "99ranch" %}99 Ranch{% elif store == "hmart" %}H Mart{% elif store == "traderjoes" %}Trader Joe's{% else %}{{ store }}{% endif %}</h2>
+        <h2>{% if store == "heb" %}H-E-B{% elif store == "costco" %}Costco{% elif store == "99ranch" %}99 Ranch{% elif store == "hmart" %}H Mart{% else %}{{ store }}{% endif %}</h2>
         {% if data.est_savings > 0 %}
         <span class="store-plan-save">Save ${{ "%.2f" | format(data.est_savings) }}</span>
         {% endif %}

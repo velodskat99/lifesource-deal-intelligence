@@ -30,7 +30,7 @@
         <div class="list-item">
             <div style="display:flex;align-items:center;gap:0.5rem">
                 <span class="store-tag {{ row.store }}">
-                    {% if row.store == 'heb' %}H-E-B{% elif row.store == 'costco' %}Costco{% elif row.store == '99ranch' %}99 Ranch{% elif row.store == 'hmart' %}H Mart{% elif row.store == 'traderjoes' %}Trader Joe's{% else %}{{ row.store | upper }}{% endif %}
+                    {% if row.store == 'heb' %}H-E-B{% elif row.store == 'costco' %}Costco{% elif row.store == '99ranch' %}99 Ranch{% elif row.store == 'hmart' %}H Mart{% else %}{{ row.store | upper }}{% endif %}
                 </span>
                 <span style="font-size:0.78rem;color:var(--ink-muted)">{{ row["items"] }} items</span>
             </div>

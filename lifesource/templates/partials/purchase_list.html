@@ -3,7 +3,7 @@
     <div>
         <span style="font-weight:500">{{ p.item_name | title }}</span>
         <span class="store-tag {{ p.store }}" style="margin-left:0.4rem">
-            {% if p.store == 'heb' %}H-E-B{% elif p.store == 'costco' %}Costco{% elif p.store == '99ranch' %}99 Ranch{% elif p.store == 'hmart' %}H Mart{% elif p.store == 'traderjoes' %}Trader Joe's{% else %}{{ p.store }}{% endif %}
+            {% if p.store == 'heb' %}H-E-B{% elif p.store == 'costco' %}Costco{% elif p.store == '99ranch' %}99 Ranch{% elif p.store == 'hmart' %}H Mart{% else %}{{ p.store }}{% endif %}
         </span>
     </div>
     <div style="text-align:right">

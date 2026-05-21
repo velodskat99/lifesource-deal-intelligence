@@ -10,11 +10,11 @@
 <div class="content-card">
     <h2>Active Stores</h2>
     <div class="settings-group">
-        {% for store in ["heb", "costco", "99ranch", "hmart", "traderjoes"] %}
+        {% for store in ["heb", "costco", "99ranch", "hmart"] %}
         <label>
             <input type="checkbox" {{ 'checked' if store in settings.get('active_stores', []) }}
                    name="store" value="{{ store }}">
-            {% if store == "heb" %}H-E-B{% elif store == "costco" %}Costco{% elif store == "99ranch" %}99 Ranch{% elif store == "hmart" %}H Mart{% elif store == "traderjoes" %}Trader Joe's{% endif %}
+            {% if store == "heb" %}H-E-B{% elif store == "costco" %}Costco{% elif store == "99ranch" %}99 Ranch{% elif store == "hmart" %}H Mart{% endif %}
         </label>
         {% endfor %}
     </div>

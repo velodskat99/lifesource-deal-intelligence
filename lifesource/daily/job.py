@@ -1,6 +1,5 @@
 import asyncio
 import logging
-from datetime import date
 
 from lifesource.config import get_settings
 from lifesource.db import get_connection, init_db
@@ -13,7 +12,6 @@ from lifesource.scrapers.heb import HebScraper
 from lifesource.scrapers.costco import CostcoScraper
 from lifesource.scrapers.ranch99 import Ranch99Scraper
 from lifesource.scrapers.hmart import HmartScraper
-from lifesource.scrapers.traderjoes import TraderJoesScraper
 from lifesource.scoring.engine import score_deals
 
 logger = logging.getLogger(__name__)
@@ -59,7 +57,6 @@ def run_daily_job(db_path: str | None = None) -> dict:
         ("Costco", CostcoScraper),
         ("99 Ranch", Ranch99Scraper),
         ("H Mart", HmartScraper),
-        ("Trader Joe's", TraderJoesScraper),
     ]
 
     for store_name, scraper_cls in scrapers:

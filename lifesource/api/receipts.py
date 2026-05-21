@@ -5,7 +5,6 @@ import logging
 
 import httpx
 from fastapi import APIRouter, UploadFile, File
-from pydantic import BaseModel
 
 from lifesource.db import get_db
 
@@ -29,8 +28,6 @@ STORE_NORMALIZE = {
     "costco": "costco",
     "99 ranch": "99ranch", "99ranch": "99ranch",
     "h mart": "hmart", "hmart": "hmart", "h-mart": "hmart",
-    "trader joe's": "traderjoes", "trader joes": "traderjoes",
-    "traderjoes": "traderjoes", "tj": "traderjoes",
 }
 
 

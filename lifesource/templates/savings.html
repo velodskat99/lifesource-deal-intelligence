@@ -41,7 +41,7 @@
             <div class="savings-detail">
                 Bought {{ item.times }}x at
                 <span class="store-tag {{ item.store }}">
-                    {% if item.store == 'heb' %}H-E-B{% elif item.store == 'costco' %}Costco{% elif item.store == '99ranch' %}99 Ranch{% elif item.store == 'hmart' %}H Mart{% elif item.store == 'traderjoes' %}Trader Joe's{% else %}{{ item.store }}{% endif %}
+                    {% if item.store == 'heb' %}H-E-B{% elif item.store == 'costco' %}Costco{% elif item.store == '99ranch' %}99 Ranch{% elif item.store == 'hmart' %}H Mart{% else %}{{ item.store }}{% endif %}
                 </span>
                 for ${{ "%.2f" | format(item.your_price) }} avg
             </div>
@@ -109,7 +109,7 @@
     <div>
         <span style="font-weight:500">{{ item.deal_name }}</span>
         <span class="store-tag {{ item.store }}" style="margin-left:0.4rem">
-            {% if item.store == 'heb' %}H-E-B{% elif item.store == 'costco' %}Costco{% elif item.store == '99ranch' %}99 Ranch{% elif item.store == 'hmart' %}H Mart{% elif item.store == 'traderjoes' %}Trader Joe's{% else %}{{ item.store }}{% endif %}
+            {% if item.store == 'heb' %}H-E-B{% elif item.store == 'costco' %}Costco{% elif item.store == '99ranch' %}99 Ranch{% elif item.store == 'hmart' %}H Mart{% else %}{{ item.store }}{% endif %}
         </span>
         <div style="font-size:0.72rem;color:var(--ink-muted);margin-top:0.15rem">
             You usually pay ${{ "%.2f" | format(item.your_avg) }} · Now ${{ "%.2f" | format(item.deal_price) }}

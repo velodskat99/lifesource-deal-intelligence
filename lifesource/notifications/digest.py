@@ -8,7 +8,6 @@ STORE_DISPLAY = {
     "costco": "Costco",
     "99ranch": "99 Ranch",
     "hmart": "H Mart",
-    "traderjoes": "Trader Joe's",
 }
 
 

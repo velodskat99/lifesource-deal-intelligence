@@ -23,7 +23,7 @@
         <h3>{{ deal.item_name }}</h3>
         <div class="deal-meta">
             <span class="store-tag {{ deal.store }}">
-                {% if deal.store == 'heb' %}H-E-B{% elif deal.store == 'costco' %}Costco{% elif deal.store == '99ranch' %}99 Ranch{% elif deal.store == 'hmart' %}H Mart{% elif deal.store == 'traderjoes' %}Trader Joe's{% else %}{{ deal.store }}{% endif %}
+                {% if deal.store == 'heb' %}H-E-B{% elif deal.store == 'costco' %}Costco{% elif deal.store == '99ranch' %}99 Ranch{% elif deal.store == 'hmart' %}H Mart{% else %}{{ deal.store }}{% endif %}
             </span>
             <span>{{ deal.category or "" }}</span>
             {% if deal.unit %}<span>per {{ deal.unit }}</span>{% endif %}
