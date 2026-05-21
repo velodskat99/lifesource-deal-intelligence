@@ -1,6 +1,5 @@
 """Spending analytics and price history API."""
 from fastapi import APIRouter, Query
-from typing import Optional
 
 from lifesource.db import get_db
 

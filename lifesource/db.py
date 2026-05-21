@@ -104,6 +104,19 @@ CREATE TABLE IF NOT EXISTS watchlist (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS source_snapshots (
+    id INTEGER PRIMARY KEY,
+    store TEXT NOT NULL,
+    region TEXT NOT NULL,
+    source_url TEXT NOT NULL,
+    source_type TEXT NOT NULL,
+    fingerprint TEXT NOT NULL,
+    raw_metadata TEXT,
+    first_seen_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_seen_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(store, region, source_url, source_type)
+);
+
 CREATE INDEX IF NOT EXISTS idx_deals_store ON deals(store);
 CREATE INDEX IF NOT EXISTS idx_deals_end_date ON deals(end_date);
 CREATE INDEX IF NOT EXISTS idx_deals_product_id ON deals(product_id);
@@ -112,6 +125,8 @@ CREATE INDEX IF NOT EXISTS idx_price_history_product_id ON price_history(product
 CREATE INDEX IF NOT EXISTS idx_gas_stations_zone ON gas_stations(zone);
 CREATE INDEX IF NOT EXISTS idx_gas_price_history_station_id ON gas_price_history(station_id);
 CREATE INDEX IF NOT EXISTS idx_watchlist_active ON watchlist(active);
+CREATE INDEX IF NOT EXISTS idx_source_snapshots_store_region
+    ON source_snapshots(store, region, source_type);
 """
 
 

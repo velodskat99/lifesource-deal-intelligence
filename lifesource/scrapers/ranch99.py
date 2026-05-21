@@ -5,8 +5,6 @@ product data with images, prices, and sale information. No AI vision needed.
 """
 import logging
 
-import httpx
-
 from lifesource.models import Deal
 from lifesource.scrapers.base import BaseScraper
 
@@ -100,9 +98,6 @@ class Ranch99Scraper(BaseScraper):
 
         # Category from section name or product name
         category = self._guess_category(name, section_name)
-
-        # Check if item is on sale
-        is_sale = product.get("sale", False)
 
         return Deal(
             store="99ranch",

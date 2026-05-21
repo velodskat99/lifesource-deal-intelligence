@@ -1,7 +1,6 @@
 import os
 import tempfile
 from datetime import date
-from pathlib import Path
 
 
 def test_backup_creates_file(tmp_db):

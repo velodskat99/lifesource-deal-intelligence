@@ -1,5 +1,5 @@
 """Ad-hoc purchase watchlist API."""
-from fastapi import APIRouter, Query
+from fastapi import APIRouter
 from pydantic import BaseModel
 from typing import Optional
 

@@ -2,12 +2,12 @@
 import logging
 import sys
 
+from lifesource.daily.job import run_daily_job
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(name)s] %(levelname)s: %(message)s",
 )
-
-from lifesource.daily.job import run_daily_job
 
 
 def main():

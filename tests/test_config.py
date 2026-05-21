@@ -1,7 +1,7 @@
 import os
 from unittest.mock import patch
 
-from lifesource.config import get_settings, Settings
+from lifesource.config import get_settings
 
 
 def test_config_loads_from_env():

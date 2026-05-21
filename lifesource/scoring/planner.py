@@ -8,7 +8,6 @@ from datetime import date, timedelta
 from typing import Optional
 
 from lifesource.db import get_db
-from lifesource.models import Deal
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +49,6 @@ def generate_shopping_plan(db_path: str, today: Optional[date] = None) -> dict:
 
         # Get user preferences for restock prediction
         prefs = conn.execute("SELECT * FROM user_preferences").fetchall()
-        prefs_by_product = {p["product_id"]: dict(p) for p in prefs}
 
         # Find items due for restock
         restock_items = []

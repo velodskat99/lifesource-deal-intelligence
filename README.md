@@ -81,6 +81,18 @@ Run the daily scrape/digest job:
 python -m lifesource.daily
 ```
 
+Run the H Mart Texas weekly-ad monitor:
+
+```bash
+python -m lifesource.daily.hmart_weekly monitor
+```
+
+Run the H Mart Texas weekly planning digest:
+
+```bash
+python -m lifesource.daily.hmart_weekly digest
+```
+
 ## macOS launchd
 
 The tracked plist files are templates and intentionally use `__PROJECT_DIR__`

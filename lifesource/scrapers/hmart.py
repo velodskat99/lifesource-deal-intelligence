@@ -78,7 +78,7 @@ class HmartScraper(BaseScraper):
                     sale_price=sale_price,
                     regular_price=regular_price,
                     image_url=image_url if image_url else None,
-                    source_url=f"https://www.hmart.com/sale",
+                    source_url="https://www.hmart.com/sale",
                     source_type="scraper",
                 ))
 
