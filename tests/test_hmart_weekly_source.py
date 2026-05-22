@@ -54,17 +54,32 @@ def test_inspect_html_excludes_theme_and_social_assets():
     source = HmartTexasWeeklyAdSource()
     result = source.inspect_html(html)
 
-    assert result.assets == [
-        "https://www.hmart.com/assets/vtex.file-manager-graphql/images/current.jpg?utm_campaign=Weekly+Sale+-+All"
-    ]
+    assert result.assets == []
+    assert result.metadata["strategy"] == "raw_html"
+
+
+def test_inspect_html_excludes_kakaotalk_marketing_promo():
+    html = """
+    <html>
+      <body>
+        <img src="https://www.hmart.com/assets/vtex.file-manager-graphql/images/c3d9721c.jpg?utm_campaign=KakaoTalk+All&utm_campaign=Weekly+Sale+-+All">
+      </body>
+    </html>
+    """
+
+    source = HmartTexasWeeklyAdSource()
+    result = source.inspect_html(html)
+
+    assert result.assets == []
+    assert result.metadata["strategy"] == "raw_html"
 
 
 def test_inspect_html_deduplicates_html_escaped_asset_urls():
     html = """
     <html>
       <body>
-        <img src="https://www.hmart.com/assets/vtex.file-manager-graphql/images/current.jpg?utm_campaign=Weekly+Sale+-+All&amp;dm_t=1">
-        <script>"https://www.hmart.com/assets/vtex.file-manager-graphql/images/current.jpg?utm_campaign=Weekly+Sale+-+All&dm_t=1"</script>
+        <img src="https://www.hmart.com/media/weekly-ads/texas/current.jpg?week=1&amp;dm_t=1">
+        <script>"https://www.hmart.com/media/weekly-ads/texas/current.jpg?week=1&dm_t=1"</script>
       </body>
     </html>
     """
@@ -73,5 +88,5 @@ def test_inspect_html_deduplicates_html_escaped_asset_urls():
     result = source.inspect_html(html)
 
     assert result.assets == [
-        "https://www.hmart.com/assets/vtex.file-manager-graphql/images/current.jpg?utm_campaign=Weekly+Sale+-+All&dm_t=1"
+        "https://www.hmart.com/media/weekly-ads/texas/current.jpg?week=1&dm_t=1"
     ]

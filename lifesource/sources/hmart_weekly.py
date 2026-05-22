@@ -3,7 +3,7 @@ import hashlib
 import json
 import re
 from dataclasses import dataclass, field
-from urllib.parse import unquote_plus, urljoin
+from urllib.parse import unquote_plus, urljoin, urlsplit
 
 import httpx
 from bs4 import BeautifulSoup
@@ -107,6 +107,7 @@ class HmartTexasWeeklyAdSource:
 
     def _looks_like_weekly_ad_asset(self, value: str) -> bool:
         lower = unquote_plus(value.lower())
+        path = urlsplit(lower).path
         blocked_tokens = (
             "assets-builder",
             "/footer/",
@@ -119,10 +120,17 @@ class HmartTexasWeeklyAdSource:
         )
         if any(token in lower for token in blocked_tokens):
             return False
-        if not any(token in lower for token in ("weekly", "weekly sale", "weekly-ad", "weekly_ad")):
+        weekly_path_tokens = (
+            "/weekly-ads/",
+            "/weekly-ad/",
+            "/weekly_ads/",
+            "/weekly/",
+            "/media/weekly-ads/",
+        )
+        if not any(token in path for token in weekly_path_tokens):
             return False
 
-        return any(lower.split("?")[0].endswith(ext) for ext in (".jpg", ".jpeg", ".png", ".webp", ".pdf"))
+        return any(path.endswith(ext) for ext in (".jpg", ".jpeg", ".png", ".webp", ".pdf"))
 
     def _extract_date_labels(self, text: str) -> list[str]:
         labels = re.findall(
