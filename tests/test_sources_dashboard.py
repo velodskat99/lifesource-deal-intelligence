@@ -49,6 +49,7 @@ async def test_sources_page_shows_item_level_empty_state(client):
 
     assert response.status_code == 200
     assert "Item-Level Data" in response.text
+    assert "/sources/hmart-texas/extract-items" in response.text
     assert "No extracted H Mart items yet." in response.text
 
 
@@ -106,3 +107,18 @@ async def test_sources_check_redirects_back_to_sources(client, monkeypatch):
 
     assert response.status_code == 303
     assert response.headers["location"] == "/sources?checked=1&changed=1"
+
+
+@pytest.mark.anyio
+async def test_sources_extract_redirects_back_to_sources(client, monkeypatch):
+    from lifesource.dashboard import routes
+
+    def fake_extract(db_path):
+        return {"status": "skipped", "item_count": 0, "items": []}
+
+    monkeypatch.setattr(routes, "extract_hmart_texas_items_for_review", fake_extract)
+
+    response = await client.post("/sources/hmart-texas/extract-items")
+
+    assert response.status_code == 303
+    assert response.headers["location"] == "/sources?extracted=1&extract_status=skipped"

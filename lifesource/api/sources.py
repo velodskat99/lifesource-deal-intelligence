@@ -1,6 +1,11 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 
+from lifesource.config import get_settings
+from lifesource.sources.hmart_items import (
+    VisionWeeklyAdAssetExtractor,
+    extract_hmart_texas_items,
+)
 from lifesource.sources.hmart_weekly import HmartTexasWeeklyAdSource
 from lifesource.sources.status import get_hmart_texas_status, record_hmart_texas_inspection
 from lifesource.sources.weekly_items import WeeklyAdItem, list_weekly_ad_items, replace_weekly_ad_items
@@ -23,6 +28,32 @@ class WeeklyAdItemPayload(BaseModel):
 
 class WeeklyAdItemsPayload(BaseModel):
     items: list[WeeklyAdItemPayload]
+
+
+def extract_hmart_texas_items_for_review(db_path: str) -> dict:
+    status = get_hmart_texas_status(db_path)
+    if not status.get("assets"):
+        return extract_hmart_texas_items(db_path)
+
+    settings = get_settings()
+    if not _looks_configured_api_key(settings.anthropic_api_key):
+        return {
+            "status": "skipped",
+            "reason": "anthropic_api_key_not_configured",
+            "item_count": status.get("item_count", 0),
+            "skipped_count": 0,
+            "assets_processed": 0,
+            "items": list_weekly_ad_items(db_path, store="hmart", region="texas"),
+        }
+
+    return extract_hmart_texas_items(
+        db_path,
+        extractor=VisionWeeklyAdAssetExtractor(settings.anthropic_api_key),
+    )
+
+
+def _looks_configured_api_key(api_key: str) -> bool:
+    return bool(api_key) and api_key not in {"demo", "test", "k", "test-anthropic-key"}
 
 
 def create_sources_router(db_path: str) -> APIRouter:
@@ -75,6 +106,10 @@ def create_sources_router(db_path: str) -> APIRouter:
             "item_count": len(items),
             "items": items,
         }
+
+    @router.post("/sources/hmart-texas/extract-items")
+    def extract_hmart_texas_items_endpoint():
+        return extract_hmart_texas_items_for_review(db_path)
 
     @router.post("/sources/hmart-texas/check")
     def check_hmart_texas():

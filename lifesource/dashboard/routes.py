@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Optional
 
 from lifesource.db import get_db
+from lifesource.api.sources import extract_hmart_texas_items_for_review
 from lifesource.sources.hmart_weekly import HmartTexasWeeklyAdSource
 from lifesource.sources.status import get_hmart_texas_status, record_hmart_texas_inspection
 from lifesource.sources.weekly_items import list_weekly_ad_items
@@ -240,16 +241,22 @@ def create_dashboard_router(db_path: str) -> APIRouter:
         request: Request,
         checked: Optional[int] = Query(None),
         changed: Optional[int] = Query(None),
+        extracted: Optional[int] = Query(None),
+        extract_status: Optional[str] = Query(None),
     ):
         check_result = None
         if checked is not None:
             check_result = {"changed": bool(changed)}
+        extract_result = None
+        if extracted is not None:
+            extract_result = {"status": extract_status or "unknown"}
         return _render(
             "sources.html",
             request,
             hmart_status=get_hmart_texas_status(db_path),
             hmart_items=list_weekly_ad_items(db_path, store="hmart", region="texas"),
             check_result=check_result,
+            extract_result=extract_result,
         )
 
     @router.post("/sources/hmart-texas/check")
@@ -258,6 +265,15 @@ def create_dashboard_router(db_path: str) -> APIRouter:
         result = record_hmart_texas_inspection(db_path, inspection)
         changed = 1 if result["changed"] else 0
         return RedirectResponse(f"/sources?checked=1&changed={changed}", status_code=303)
+
+    @router.post("/sources/hmart-texas/extract-items")
+    def extract_hmart_texas_source_items(request: Request):
+        result = extract_hmart_texas_items_for_review(db_path)
+        status = result.get("status", "unknown")
+        return RedirectResponse(
+            f"/sources?extracted=1&extract_status={status}",
+            status_code=303,
+        )
 
     @router.get("/plan")
     def shopping_plan(request: Request):

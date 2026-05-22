@@ -154,6 +154,62 @@ async def test_hmart_source_items_endpoint_replaces_item_level_rows(client):
 
 
 @pytest.mark.anyio
+async def test_hmart_source_extract_endpoint_skips_without_weekly_ad_assets(client):
+    response = await client.post("/api/sources/hmart-texas/extract-items")
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "skipped"
+    assert data["reason"] == "no_weekly_ad_assets"
+    assert data["item_count"] == 0
+
+
+@pytest.mark.anyio
+async def test_hmart_source_extract_endpoint_runs_vision_extractor(
+    client,
+    tmp_db,
+    monkeypatch,
+):
+    asset_url = "https://cdn.hmart.com/weekly-ads/texas/page-1.jpg"
+    record_source_snapshot(
+        tmp_db,
+        SourceSnapshot(
+            store="hmart",
+            region="texas",
+            source_url=HMART_TEXAS_WEEKLY_AD_URL,
+            source_type="weekly_ad",
+            fingerprint="abc123456789",
+            raw_metadata={"assets": [asset_url], "strategy": "weekly_ad_assets"},
+        ),
+    )
+    monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "test-token")
+    monkeypatch.setenv("TELEGRAM_CHAT_ID", "1")
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "configured-test-key")
+
+    from lifesource.config import get_settings
+    from lifesource.api import sources
+
+    get_settings.cache_clear()
+
+    class FakeVisionExtractor:
+        def __init__(self, api_key):
+            assert api_key == "configured-test-key"
+
+        def extract(self, asset_url):
+            return [{"item_name": "Short Rib", "sale_price": 8.99, "unit": "lb"}]
+
+    monkeypatch.setattr(sources, "VisionWeeklyAdAssetExtractor", FakeVisionExtractor)
+
+    response = await client.post("/api/sources/hmart-texas/extract-items")
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "success"
+    assert data["item_count"] == 1
+    assert data["items"][0]["item_name"] == "Short Rib"
+
+
+@pytest.mark.anyio
 async def test_hmart_source_manual_check_records_snapshot(client, monkeypatch):
     inspection = WeeklyAdInspection(
         source_url=HMART_TEXAS_WEEKLY_AD_URL,
