@@ -117,6 +117,26 @@ CREATE TABLE IF NOT EXISTS source_snapshots (
     UNIQUE(store, region, source_url, source_type)
 );
 
+CREATE TABLE IF NOT EXISTS weekly_ad_items (
+    id INTEGER PRIMARY KEY,
+    store TEXT NOT NULL,
+    region TEXT NOT NULL,
+    source_url TEXT NOT NULL,
+    asset_url TEXT,
+    item_name TEXT NOT NULL,
+    category TEXT,
+    regular_price REAL,
+    sale_price REAL NOT NULL,
+    unit TEXT,
+    start_date DATE,
+    end_date DATE,
+    confidence REAL,
+    status TEXT NOT NULL DEFAULT 'pending_review',
+    raw_text TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE INDEX IF NOT EXISTS idx_deals_store ON deals(store);
 CREATE INDEX IF NOT EXISTS idx_deals_end_date ON deals(end_date);
 CREATE INDEX IF NOT EXISTS idx_deals_product_id ON deals(product_id);
@@ -127,6 +147,8 @@ CREATE INDEX IF NOT EXISTS idx_gas_price_history_station_id ON gas_price_history
 CREATE INDEX IF NOT EXISTS idx_watchlist_active ON watchlist(active);
 CREATE INDEX IF NOT EXISTS idx_source_snapshots_store_region
     ON source_snapshots(store, region, source_type);
+CREATE INDEX IF NOT EXISTS idx_weekly_ad_items_store_region_status
+    ON weekly_ad_items(store, region, status);
 """
 
 

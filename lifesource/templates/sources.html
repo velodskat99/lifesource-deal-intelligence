@@ -32,6 +32,10 @@
                 <dd>{{ hmart_status.asset_count }}</dd>
             </div>
             <div>
+                <dt>Items</dt>
+                <dd>{{ hmart_status.item_count }}</dd>
+            </div>
+            <div>
                 <dt>Strategy</dt>
                 <dd>{{ hmart_status.strategy or 'Waiting for first check' }}</dd>
             </div>
@@ -70,15 +74,53 @@
             </ol>
         </div>
         {% endif %}
+
+        <div class="source-items">
+            <div class="source-items-header">
+                <h3>Item-Level Data</h3>
+                <a href="/api/sources/hmart-texas/items">JSON</a>
+            </div>
+            {% if hmart_items %}
+            <div class="source-table-wrap">
+                <table class="source-table">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Sale</th>
+                            <th>Unit</th>
+                            <th>Status</th>
+                            <th>Confidence</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in hmart_items %}
+                        <tr>
+                            <td>
+                                <strong>{{ item.item_name }}</strong>
+                                {% if item.category %}<span>{{ item.category }}</span>{% endif %}
+                            </td>
+                            <td>{{ "$%.2f"|format(item.sale_price) }}</td>
+                            <td>{{ item.unit or 'each' }}</td>
+                            <td>{{ item.status }}</td>
+                            <td>{% if item.confidence is not none %}{{ "%.0f%%"|format(item.confidence * 100) }}{% else %}Review{% endif %}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="source-empty">No extracted H Mart items yet. The next extraction pass should write rows here before anything becomes a deal.</p>
+            {% endif %}
+        </div>
     </article>
 
     <aside class="source-notes">
         <h2>Current Rule</h2>
         <p>Only H Mart Texas weekly-ad assets can become H Mart deals. Generic catalog or product listings stay out of the deal feed.</p>
         <h2>Item-Level Data</h2>
-        <p>Not available yet. The current layer tracks weekly-ad assets and refreshes; item extraction comes next through OCR or vision review.</p>
+        <p>Extracted rows stay in pending review first, separate from real deals, so bad OCR or the wrong asset cannot pollute the shopping feed.</p>
         <h2>Next Layer</h2>
-        <p>Once refresh tracking is stable, the next step is OCR or vision extraction from the weekly-ad assets into reviewed deal rows.</p>
+        <p>Now that the item table exists, the next step is a reviewed OCR or vision extractor for the weekly-ad images.</p>
     </aside>
 </section>
 {% endblock %}

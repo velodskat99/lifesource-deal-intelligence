@@ -573,7 +573,7 @@
         }
         .source-metrics {
             display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
+            grid-template-columns: repeat(5, minmax(0, 1fr));
             gap: 0.65rem;
             margin: 0;
         }
@@ -638,6 +638,76 @@
         }
         .source-assets a:hover {
             color: var(--accent);
+        }
+        .source-items {
+            margin-top: 1rem;
+            border-top: 1px solid var(--border);
+            padding-top: 1rem;
+        }
+        .source-items-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 0.6rem;
+        }
+        .source-items-header h3 {
+            margin: 0;
+            font-size: 0.82rem;
+            font-weight: 750;
+        }
+        .source-items-header a {
+            color: var(--ink-muted);
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .source-items-header a:hover { color: var(--accent); }
+        .source-table-wrap {
+            width: 100%;
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+        }
+        .source-table {
+            width: 100%;
+            min-width: 36rem;
+            border-collapse: collapse;
+            background: var(--surface-raised);
+        }
+        .source-table th,
+        .source-table td {
+            padding: 0.55rem 0.65rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.78rem;
+            vertical-align: top;
+        }
+        .source-table th {
+            color: var(--ink-muted);
+            font-size: 0.66rem;
+            font-weight: 750;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            background: var(--surface);
+        }
+        .source-table tr:last-child td { border-bottom: none; }
+        .source-table strong {
+            display: block;
+            font-size: 0.82rem;
+            color: var(--ink);
+        }
+        .source-table span {
+            display: block;
+            color: var(--ink-muted);
+            font-size: 0.72rem;
+            margin-top: 0.1rem;
+        }
+        .source-empty {
+            margin: 0;
+            color: var(--ink-muted);
+            font-size: 0.82rem;
+            line-height: 1.55;
         }
         .source-notes h2 {
             font-size: 0.85rem;

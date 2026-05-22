@@ -7,6 +7,7 @@ from typing import Optional
 from lifesource.db import get_db
 from lifesource.sources.hmart_weekly import HmartTexasWeeklyAdSource
 from lifesource.sources.status import get_hmart_texas_status, record_hmart_texas_inspection
+from lifesource.sources.weekly_items import list_weekly_ad_items
 
 templates = Jinja2Templates(directory=str(Path(__file__).parent.parent / "templates"))
 
@@ -247,6 +248,7 @@ def create_dashboard_router(db_path: str) -> APIRouter:
             "sources.html",
             request,
             hmart_status=get_hmart_texas_status(db_path),
+            hmart_items=list_weekly_ad_items(db_path, store="hmart", region="texas"),
             check_result=check_result,
         )
 

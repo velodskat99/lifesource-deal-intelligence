@@ -4,6 +4,7 @@ from typing import Any
 from lifesource.db import get_db
 from lifesource.sources.hmart_weekly import HMART_TEXAS_WEEKLY_AD_URL, WeeklyAdInspection
 from lifesource.sources.snapshots import SourceSnapshot, record_source_snapshot
+from lifesource.sources.weekly_items import count_weekly_ad_items
 
 
 def get_hmart_texas_status(db_path: str) -> dict[str, Any]:
@@ -29,6 +30,7 @@ def get_hmart_texas_status(db_path: str) -> dict[str, Any]:
         "fingerprint": None,
         "fingerprint_short": None,
         "asset_count": 0,
+        "item_count": count_weekly_ad_items(db_path, store="hmart", region="texas"),
         "assets": [],
         "strategy": None,
         "first_seen_at": None,
