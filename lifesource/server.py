@@ -16,6 +16,7 @@ from lifesource.api.receipts import create_receipts_router
 from lifesource.api.watchlist import create_watchlist_router
 from lifesource.api.analytics import create_analytics_router
 from lifesource.api.settings import create_settings_router
+from lifesource.api.sources import create_sources_router
 from lifesource.dashboard.routes import create_dashboard_router
 from lifesource.db import init_db
 
@@ -159,6 +160,7 @@ def create_app(db_path: str | None = None, access_pin: str | None = None) -> Fas
     app.include_router(create_watchlist_router(db_path), prefix="/api")
     app.include_router(create_analytics_router(db_path), prefix="/api")
     app.include_router(create_settings_router(db_path), prefix="/api")
+    app.include_router(create_sources_router(db_path), prefix="/api")
 
     # Dashboard routes (HTML pages)
     app.include_router(create_dashboard_router(db_path))

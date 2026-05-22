@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Sources · LifeSource{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>Data Sources</h1>
+    <p class="subtitle">Regional weekly ads, refresh fingerprints, and source health.</p>
+</div>
+
+{% if check_result %}
+<div class="alert-banner">
+    <span class="alert-text">
+        H Mart Texas checked. {% if check_result.changed %}New refresh detected.{% else %}No refresh detected.{% endif %}
+    </span>
+</div>
+{% endif %}
+
+<section class="source-grid">
+    <article class="source-panel">
+        <div class="source-panel-header">
+            <div>
+                <p class="eyebrow">Weekly Ad</p>
+                <h2>H Mart Texas</h2>
+            </div>
+            <span class="source-state {{ 'active' if hmart_status.has_snapshot else 'pending' }}">
+                {{ 'Tracking' if hmart_status.has_snapshot else 'Not checked' }}
+            </span>
+        </div>
+
+        <dl class="source-metrics">
+            <div>
+                <dt>Assets</dt>
+                <dd>{{ hmart_status.asset_count }}</dd>
+            </div>
+            <div>
+                <dt>Strategy</dt>
+                <dd>{{ hmart_status.strategy or 'Waiting for first check' }}</dd>
+            </div>
+            <div>
+                <dt>Fingerprint</dt>
+                <dd>{{ hmart_status.fingerprint_short or 'None' }}</dd>
+            </div>
+            <div>
+                <dt>Last seen</dt>
+                <dd>{{ hmart_status.last_seen_at or 'Never' }}</dd>
+            </div>
+        </dl>
+
+        {% if hmart_status.warnings %}
+        <div class="source-warnings">
+            {% for warning in hmart_status.warnings %}
+            <p>{{ warning }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="source-actions">
+            <form method="post" action="/sources/hmart-texas/check">
+                <button class="btn btn-primary" type="submit">Check Now</button>
+            </form>
+            <a class="btn btn-ghost" href="{{ hmart_status.source_url }}" target="_blank" rel="noopener">Open Weekly Ad</a>
+        </div>
+    </article>
+
+    <aside class="source-notes">
+        <h2>Current Rule</h2>
+        <p>Only H Mart Texas weekly-ad assets can become H Mart deals. Generic catalog or product listings stay out of the deal feed.</p>
+        <h2>Next Layer</h2>
+        <p>Once refresh tracking is stable, the next step is OCR or vision extraction from the weekly-ad assets into reviewed deal rows.</p>
+    </aside>
+</section>
+{% endblock %}

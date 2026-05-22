@@ -4,6 +4,8 @@ from pathlib import Path
 from typing import Optional
 
 from lifesource.db import get_db
+from lifesource.sources.hmart_weekly import HmartTexasWeeklyAdSource
+from lifesource.sources.status import get_hmart_texas_status, record_hmart_texas_inspection
 
 templates = Jinja2Templates(directory=str(Path(__file__).parent.parent / "templates"))
 
@@ -230,6 +232,25 @@ def create_dashboard_router(db_path: str) -> APIRouter:
             except (json.JSONDecodeError, TypeError):
                 settings[row["key"]] = row["value"]
         return _render("settings.html", request, settings=settings)
+
+    @router.get("/sources")
+    def sources_page(request: Request):
+        return _render(
+            "sources.html",
+            request,
+            hmart_status=get_hmart_texas_status(db_path),
+        )
+
+    @router.post("/sources/hmart-texas/check")
+    def check_hmart_texas_source(request: Request):
+        inspection = HmartTexasWeeklyAdSource().check()
+        result = record_hmart_texas_inspection(db_path, inspection)
+        return _render(
+            "sources.html",
+            request,
+            hmart_status=result["status"],
+            check_result=result,
+        )
 
     @router.get("/plan")
     def shopping_plan(request: Request):

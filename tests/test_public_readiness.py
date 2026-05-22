@@ -24,8 +24,10 @@ async def client(app):
         "/gas",
         "/watchlist",
         "/savings",
+        "/sources",
         "/api/gas",
         "/api/watchlist",
+        "/api/sources/hmart-texas/status",
     ],
 )
 async def test_fresh_database_routes_load(client, path):

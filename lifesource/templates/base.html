@@ -518,6 +518,113 @@
             margin-top: 0.35rem;
         }
 
+        /* ── Source Status ── */
+        .source-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.7fr) minmax(18rem, 0.8fr);
+            gap: 1rem;
+            align-items: start;
+        }
+        .source-panel,
+        .source-notes {
+            background: var(--surface-raised);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+        }
+        .source-panel { padding: 1.2rem; }
+        .source-notes { padding: 1rem 1.1rem; }
+        .source-panel-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .source-panel-header h2 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin: 0;
+        }
+        .eyebrow {
+            margin: 0 0 0.18rem;
+            color: var(--ink-muted);
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .source-state {
+            border-radius: 999px;
+            padding: 0.22rem 0.62rem;
+            font-size: 0.72rem;
+            font-weight: 700;
+            border: 1px solid var(--border-strong);
+            white-space: nowrap;
+        }
+        .source-state.active {
+            color: #166534;
+            border-color: rgba(22, 101, 52, 0.22);
+            background: rgba(22, 101, 52, 0.08);
+        }
+        .source-state.pending {
+            color: #92400e;
+            border-color: rgba(146, 64, 14, 0.22);
+            background: rgba(146, 64, 14, 0.08);
+        }
+        .source-metrics {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 0.65rem;
+            margin: 0;
+        }
+        .source-metrics div {
+            min-width: 0;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 0.7rem;
+            background: var(--surface);
+        }
+        .source-metrics dt {
+            color: var(--ink-muted);
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 0.28rem;
+        }
+        .source-metrics dd {
+            color: var(--ink);
+            font-size: 0.86rem;
+            font-weight: 650;
+            margin: 0;
+            overflow-wrap: anywhere;
+        }
+        .source-warnings {
+            margin-top: 0.85rem;
+            border-left: 3px solid var(--accent);
+            padding-left: 0.75rem;
+            color: var(--ink-muted);
+            font-size: 0.82rem;
+        }
+        .source-actions {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+        .source-notes h2 {
+            font-size: 0.85rem;
+            margin: 0 0 0.35rem;
+        }
+        .source-notes h2 + p {
+            margin-top: 0;
+        }
+        .source-notes p {
+            color: var(--ink-muted);
+            font-size: 0.82rem;
+            line-height: 1.55;
+            margin-bottom: 1rem;
+        }
+
         /* ── Shopping List Items ── */
         .list-check-item {
             display: flex;
@@ -909,6 +1016,8 @@
             }
             .cat-nav { gap: 0.3rem; }
             .cat-pill { font-size: 0.68rem; padding: 0.25rem 0.55rem; }
+            .source-grid { grid-template-columns: 1fr; }
+            .source-metrics { grid-template-columns: 1fr 1fr; }
 
             .inline-form { flex-direction: column; }
             .inline-form input,
@@ -945,6 +1054,7 @@
                 </div>
                 <div class="nav-group">
                     <a href="/gas" class="nav-link {% if request.url.path == '/gas' %}active{% endif %}">Gas</a>
+                    <a href="/sources" class="nav-link {% if request.url.path == '/sources' %}active{% endif %}">Sources</a>
                     <a href="/watchlist" class="nav-link {% if request.url.path == '/watchlist' %}active{% endif %}">Watch</a>
                 </div>
                 <span class="nav-spacer"></span>
