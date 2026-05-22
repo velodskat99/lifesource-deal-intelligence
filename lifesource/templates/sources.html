@@ -59,11 +59,24 @@
             </form>
             <a class="btn btn-ghost" href="{{ hmart_status.source_url }}" target="_blank" rel="noopener">Open Weekly Ad</a>
         </div>
+
+        {% if hmart_status.assets %}
+        <div class="source-assets">
+            <h3>Weekly Ad Assets</h3>
+            <ol>
+                {% for asset in hmart_status.assets %}
+                <li><a href="{{ asset }}" target="_blank" rel="noopener">{{ asset }}</a></li>
+                {% endfor %}
+            </ol>
+        </div>
+        {% endif %}
     </article>
 
     <aside class="source-notes">
         <h2>Current Rule</h2>
         <p>Only H Mart Texas weekly-ad assets can become H Mart deals. Generic catalog or product listings stay out of the deal feed.</p>
+        <h2>Item-Level Data</h2>
+        <p>Not available yet. The current layer tracks weekly-ad assets and refreshes; item extraction comes next through OCR or vision review.</p>
         <h2>Next Layer</h2>
         <p>Once refresh tracking is stable, the next step is OCR or vision extraction from the weekly-ad assets into reviewed deal rows.</p>
     </aside>

@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Request, Query, Form
+from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from pathlib import Path
 from typing import Optional
@@ -234,23 +235,27 @@ def create_dashboard_router(db_path: str) -> APIRouter:
         return _render("settings.html", request, settings=settings)
 
     @router.get("/sources")
-    def sources_page(request: Request):
+    def sources_page(
+        request: Request,
+        checked: Optional[int] = Query(None),
+        changed: Optional[int] = Query(None),
+    ):
+        check_result = None
+        if checked is not None:
+            check_result = {"changed": bool(changed)}
         return _render(
             "sources.html",
             request,
             hmart_status=get_hmart_texas_status(db_path),
+            check_result=check_result,
         )
 
     @router.post("/sources/hmart-texas/check")
     def check_hmart_texas_source(request: Request):
         inspection = HmartTexasWeeklyAdSource().check()
         result = record_hmart_texas_inspection(db_path, inspection)
-        return _render(
-            "sources.html",
-            request,
-            hmart_status=result["status"],
-            check_result=result,
-        )
+        changed = 1 if result["changed"] else 0
+        return RedirectResponse(f"/sources?checked=1&changed={changed}", status_code=303)
 
     @router.get("/plan")
     def shopping_plan(request: Request):

@@ -1,8 +1,9 @@
+import html as html_lib
 import hashlib
 import json
 import re
 from dataclasses import dataclass, field
-from urllib.parse import urljoin
+from urllib.parse import unquote_plus, urljoin
 
 import httpx
 from bs4 import BeautifulSoup
@@ -95,6 +96,7 @@ class HmartTexasWeeklyAdSource:
         normalized = []
         seen = set()
         for candidate in candidates:
+            candidate = html_lib.unescape(candidate)
             if not self._looks_like_weekly_ad_asset(candidate):
                 continue
             url = urljoin("https://www.hmart.com", candidate)
@@ -104,9 +106,22 @@ class HmartTexasWeeklyAdSource:
         return normalized
 
     def _looks_like_weekly_ad_asset(self, value: str) -> bool:
-        lower = value.lower()
-        if not any(token in lower for token in ("weekly", "ad", "ads", "texas")):
+        lower = unquote_plus(value.lower())
+        blocked_tokens = (
+            "assets-builder",
+            "/footer/",
+            "logo",
+            "icon-",
+            "bt-app",
+            "instagram",
+            "tiktok",
+            "threads",
+        )
+        if any(token in lower for token in blocked_tokens):
             return False
+        if not any(token in lower for token in ("weekly", "weekly sale", "weekly-ad", "weekly_ad")):
+            return False
+
         return any(lower.split("?")[0].endswith(ext) for ext in (".jpg", ".jpeg", ".png", ".webp", ".pdf"))
 
     def _extract_date_labels(self, text: str) -> list[str]:

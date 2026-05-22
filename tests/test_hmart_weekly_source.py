@@ -38,3 +38,40 @@ def test_inspect_html_falls_back_to_raw_html_when_no_assets_exist():
     assert result.metadata["strategy"] == "raw_html"
     assert result.assets == []
     assert result.warnings == ["No weekly-ad assets found; fingerprint uses raw HTML."]
+
+
+def test_inspect_html_excludes_theme_and_social_assets():
+    html = """
+    <html>
+      <body>
+        <img src="https://hmartus.vtexassets.com/assets/vtex/assets-builder/hmartus.store-theme/logo-hmart.png">
+        <img src="https://hmartus.vtexassets.com/assets/vtex/assets-builder/hmartus.store-theme/footer/icon-instagram.png">
+        <img src="https://www.hmart.com/assets/vtex.file-manager-graphql/images/current.jpg?utm_campaign=Weekly+Sale+-+All">
+      </body>
+    </html>
+    """
+
+    source = HmartTexasWeeklyAdSource()
+    result = source.inspect_html(html)
+
+    assert result.assets == [
+        "https://www.hmart.com/assets/vtex.file-manager-graphql/images/current.jpg?utm_campaign=Weekly+Sale+-+All"
+    ]
+
+
+def test_inspect_html_deduplicates_html_escaped_asset_urls():
+    html = """
+    <html>
+      <body>
+        <img src="https://www.hmart.com/assets/vtex.file-manager-graphql/images/current.jpg?utm_campaign=Weekly+Sale+-+All&amp;dm_t=1">
+        <script>"https://www.hmart.com/assets/vtex.file-manager-graphql/images/current.jpg?utm_campaign=Weekly+Sale+-+All&dm_t=1"</script>
+      </body>
+    </html>
+    """
+
+    source = HmartTexasWeeklyAdSource()
+    result = source.inspect_html(html)
+
+    assert result.assets == [
+        "https://www.hmart.com/assets/vtex.file-manager-graphql/images/current.jpg?utm_campaign=Weekly+Sale+-+All&dm_t=1"
+    ]
