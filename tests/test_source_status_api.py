@@ -166,7 +166,7 @@ async def test_hmart_source_extract_endpoint_skips_without_weekly_ad_assets(clie
 
 @pytest.mark.anyio
 async def test_hmart_source_manual_asset_endpoint_adds_trusted_asset(client):
-    asset_url = "https://cdn.hmart.com/weekly-ads/texas/page-1.jpg"
+    asset_url = "https://hmartus.vtexassets.com/assets/vtex.file-manager-graphql/images/70013bcf-b50a-4332-94a7-dc1b2cb30e5c___0cb517b774be6bba75f676c52b3fbe85.jpg"
 
     response = await client.post(
         "/api/sources/hmart-texas/assets",

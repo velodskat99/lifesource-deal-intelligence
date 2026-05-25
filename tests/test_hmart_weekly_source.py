@@ -58,6 +58,52 @@ def test_inspect_html_excludes_theme_and_social_assets():
     assert result.metadata["strategy"] == "raw_html"
 
 
+def test_inspect_html_accepts_vtex_weekly_ad_image_by_alt_text():
+    html = """
+    <html>
+      <body>
+        <img
+          alt="Weekly Ad Southern Texas English"
+          src="https://hmartus.vtexassets.com/assets/vtex.file-manager-graphql/images/70013bcf-b50a-4332-94a7-dc1b2cb30e5c___0cb517b774be6bba75f676c52b3fbe85.jpg">
+      </body>
+    </html>
+    """
+
+    source = HmartTexasWeeklyAdSource()
+    result = source.inspect_html(html)
+
+    assert result.metadata["strategy"] == "weekly_ad_assets"
+    assert result.assets == [
+        "https://hmartus.vtexassets.com/assets/vtex.file-manager-graphql/images/70013bcf-b50a-4332-94a7-dc1b2cb30e5c___0cb517b774be6bba75f676c52b3fbe85.jpg"
+    ]
+
+
+def test_check_uses_rendered_html_when_raw_html_has_no_assets():
+    rendered_html = """
+    <html>
+      <body>
+        <img
+          alt="Weekly Ad Southern Texas English"
+          src="https://hmartus.vtexassets.com/assets/vtex.file-manager-graphql/images/current___weekly.jpg">
+      </body>
+    </html>
+    """
+
+    class FakeSource(HmartTexasWeeklyAdSource):
+        def fetch_html(self):
+            return "<html><body><h1>Weekly Ads</h1></body></html>"
+
+        def fetch_rendered_html(self):
+            return rendered_html
+
+    result = FakeSource().check()
+
+    assert result.metadata["strategy"] == "rendered_weekly_ad_assets"
+    assert result.assets == [
+        "https://hmartus.vtexassets.com/assets/vtex.file-manager-graphql/images/current___weekly.jpg"
+    ]
+
+
 def test_inspect_html_excludes_kakaotalk_marketing_promo():
     html = """
     <html>

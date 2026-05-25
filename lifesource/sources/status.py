@@ -103,7 +103,10 @@ def add_hmart_texas_manual_asset(db_path: str, asset_url: str) -> dict[str, Any]
     """Trust a manually supplied H Mart weekly-ad asset URL for review extraction."""
     asset_url = asset_url.strip()
     source = HmartTexasWeeklyAdSource()
-    if not _is_hmart_url(asset_url) or not source._looks_like_weekly_ad_asset(asset_url):
+    if not _is_hmart_url(asset_url) or not (
+        source._looks_like_weekly_ad_asset(asset_url)
+        or _is_hmart_vtex_file_manager_asset(asset_url)
+    ):
         raise ValueError("Asset URL does not look like a H Mart weekly-ad image or PDF.")
 
     current = get_hmart_texas_status(db_path)
@@ -164,7 +167,20 @@ def _dedupe(items: list[str]) -> list[str]:
 
 def _is_hmart_url(asset_url: str) -> bool:
     host = urlsplit(asset_url).netloc.lower()
-    return host == "hmart.com" or host.endswith(".hmart.com")
+    return (
+        host == "hmart.com"
+        or host.endswith(".hmart.com")
+        or host == "hmartus.vtexassets.com"
+    )
+
+
+def _is_hmart_vtex_file_manager_asset(asset_url: str) -> bool:
+    split = urlsplit(asset_url.lower())
+    if split.netloc != "hmartus.vtexassets.com":
+        return False
+    if "vtex.file-manager-graphql/images/" not in split.path:
+        return False
+    return any(split.path.endswith(ext) for ext in (".jpg", ".jpeg", ".png", ".webp", ".pdf"))
 
 
 def _decode_metadata(raw_metadata: str | None) -> dict[str, Any]:

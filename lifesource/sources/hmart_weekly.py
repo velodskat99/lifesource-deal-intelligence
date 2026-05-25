@@ -1,6 +1,7 @@
 import html as html_lib
 import hashlib
 import json
+import logging
 import re
 from dataclasses import dataclass, field
 from urllib.parse import unquote_plus, urljoin, urlsplit
@@ -10,6 +11,7 @@ from bs4 import BeautifulSoup
 
 
 HMART_TEXAS_WEEKLY_AD_URL = "https://www.hmart.com/weekly-ads-texas#/"
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -45,7 +47,46 @@ class HmartTexasWeeklyAdSource:
         return response.text
 
     def check(self) -> WeeklyAdInspection:
-        return self.inspect_html(self.fetch_html())
+        inspection = self.inspect_html(self.fetch_html())
+        if inspection.assets:
+            return inspection
+
+        rendered_html = self.fetch_rendered_html()
+        if not rendered_html:
+            return inspection
+
+        rendered = self.inspect_html(rendered_html)
+        if not rendered.assets:
+            return inspection
+        return WeeklyAdInspection(
+            source_url=rendered.source_url,
+            fingerprint=rendered.fingerprint,
+            assets=rendered.assets,
+            metadata={
+                **rendered.metadata,
+                "strategy": "rendered_weekly_ad_assets",
+            },
+            warnings=[],
+        )
+
+    def fetch_rendered_html(self) -> str | None:
+        try:
+            from playwright.sync_api import sync_playwright
+        except ImportError:
+            return None
+
+        try:
+            with sync_playwright() as p:
+                browser = p.chromium.launch(headless=True)
+                page = browser.new_page(viewport={"width": 1440, "height": 2200})
+                page.goto(self.source_url, wait_until="domcontentloaded", timeout=30000)
+                page.wait_for_timeout(5000)
+                html = page.content()
+                browser.close()
+            return html
+        except Exception as exc:
+            logger.warning("[hmart-weekly] Rendered page fetch failed: %s", exc)
+            return None
 
     def inspect_html(self, html: str) -> WeeklyAdInspection:
         soup = BeautifulSoup(html, "html.parser")
@@ -82,10 +123,10 @@ class HmartTexasWeeklyAdSource:
             for attr in ("href", "src", "data-src", "data-original", "content"):
                 value = tag.get(attr)
                 if value:
-                    candidates.append(value)
+                    candidates.append((value, tag))
 
         candidates.extend(
-            match.group(0)
+            (match.group(0), None)
             for match in re.finditer(
                 r"https?://[^\s\"']+(?:weekly-ads|weekly|ads)[^\s\"']+",
                 html,
@@ -95,9 +136,9 @@ class HmartTexasWeeklyAdSource:
 
         normalized = []
         seen = set()
-        for candidate in candidates:
+        for candidate, tag in candidates:
             candidate = html_lib.unescape(candidate)
-            if not self._looks_like_weekly_ad_asset(candidate):
+            if not self._looks_like_weekly_ad_asset(candidate, tag=tag):
                 continue
             url = urljoin("https://www.hmart.com", candidate)
             if url not in seen:
@@ -105,9 +146,11 @@ class HmartTexasWeeklyAdSource:
                 normalized.append(url)
         return normalized
 
-    def _looks_like_weekly_ad_asset(self, value: str) -> bool:
+    def _looks_like_weekly_ad_asset(self, value: str, tag=None) -> bool:
         lower = unquote_plus(value.lower())
-        path = urlsplit(lower).path
+        split = urlsplit(lower)
+        path = split.path
+        host = split.netloc
         blocked_tokens = (
             "assets-builder",
             "/footer/",
@@ -120,6 +163,9 @@ class HmartTexasWeeklyAdSource:
         )
         if any(token in lower for token in blocked_tokens):
             return False
+        if self._tag_identifies_weekly_ad(tag) and self._is_allowed_file_manager_asset(host, path):
+            return True
+
         weekly_path_tokens = (
             "/weekly-ads/",
             "/weekly-ad/",
@@ -130,6 +176,23 @@ class HmartTexasWeeklyAdSource:
         if not any(token in path for token in weekly_path_tokens):
             return False
 
+        return any(path.endswith(ext) for ext in (".jpg", ".jpeg", ".png", ".webp", ".pdf"))
+
+    def _tag_identifies_weekly_ad(self, tag) -> bool:
+        if tag is None:
+            return False
+        text = " ".join(
+            str(tag.get(attr, ""))
+            for attr in ("alt", "aria-label", "title")
+        ).lower()
+        return "weekly ad" in text or "weekly sales" in text
+
+    def _is_allowed_file_manager_asset(self, host: str, path: str) -> bool:
+        allowed_hosts = ("hmart.com", "www.hmart.com", "hmartus.vtexassets.com")
+        if host not in allowed_hosts:
+            return False
+        if "vtex.file-manager-graphql/images/" not in path:
+            return False
         return any(path.endswith(ext) for ext in (".jpg", ".jpeg", ".png", ".webp", ".pdf"))
 
     def _extract_date_labels(self, text: str) -> list[str]:

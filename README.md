@@ -24,6 +24,7 @@ Use `.env.example` as the template for local credentials.
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"
+python -m playwright install chromium
 cp .env.example .env
 ```
 
