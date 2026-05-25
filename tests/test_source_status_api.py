@@ -165,6 +165,46 @@ async def test_hmart_source_extract_endpoint_skips_without_weekly_ad_assets(clie
 
 
 @pytest.mark.anyio
+async def test_hmart_source_manual_asset_endpoint_adds_trusted_asset(client):
+    asset_url = "https://cdn.hmart.com/weekly-ads/texas/page-1.jpg"
+
+    response = await client.post(
+        "/api/sources/hmart-texas/assets",
+        json={"asset_url": asset_url},
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"]["asset_count"] == 1
+    assert data["status"]["assets"] == [asset_url]
+    assert data["status"]["strategy"] == "manual_weekly_ad_assets"
+
+
+@pytest.mark.anyio
+async def test_hmart_source_manual_asset_endpoint_rejects_non_weekly_asset(client):
+    response = await client.post(
+        "/api/sources/hmart-texas/assets",
+        json={
+            "asset_url": "https://www.hmart.com/assets/vtex.file-manager-graphql/images/kakaotalk.jpg"
+        },
+    )
+
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Asset URL does not look like a H Mart weekly-ad image or PDF."
+
+
+@pytest.mark.anyio
+async def test_hmart_source_manual_asset_endpoint_rejects_non_hmart_host(client):
+    response = await client.post(
+        "/api/sources/hmart-texas/assets",
+        json={"asset_url": "https://example.com/weekly-ads/texas/page-1.jpg"},
+    )
+
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Asset URL does not look like a H Mart weekly-ad image or PDF."
+
+
+@pytest.mark.anyio
 async def test_hmart_source_extract_endpoint_runs_vision_extractor(
     client,
     tmp_db,

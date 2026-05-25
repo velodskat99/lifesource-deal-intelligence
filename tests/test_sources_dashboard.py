@@ -49,6 +49,8 @@ async def test_sources_page_shows_item_level_empty_state(client):
 
     assert response.status_code == 200
     assert "Item-Level Data" in response.text
+    assert "/sources/hmart-texas/assets" in response.text
+    assert "Weekly ad image or PDF URL" in response.text
     assert "/sources/hmart-texas/extract-items" in response.text
     assert "No extracted H Mart items yet." in response.text
 
@@ -122,3 +124,25 @@ async def test_sources_extract_redirects_back_to_sources(client, monkeypatch):
 
     assert response.status_code == 303
     assert response.headers["location"] == "/sources?extracted=1&extract_status=skipped"
+
+
+@pytest.mark.anyio
+async def test_sources_manual_asset_redirects_back_to_sources(client, monkeypatch):
+    from lifesource.dashboard import routes
+
+    def fake_add(db_path, asset_url):
+        assert asset_url == "https://cdn.hmart.com/weekly-ads/texas/page-1.jpg"
+        return {"status": get_mock_status(asset_url)}
+
+    def get_mock_status(asset_url):
+        return {"assets": [asset_url], "asset_count": 1}
+
+    monkeypatch.setattr(routes, "add_hmart_texas_manual_asset", fake_add)
+
+    response = await client.post(
+        "/sources/hmart-texas/assets",
+        data={"asset_url": "https://cdn.hmart.com/weekly-ads/texas/page-1.jpg"},
+    )
+
+    assert response.status_code == 303
+    assert response.headers["location"] == "/sources?asset_added=1"

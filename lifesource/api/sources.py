@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 from lifesource.config import get_settings
@@ -7,7 +7,11 @@ from lifesource.sources.hmart_items import (
     extract_hmart_texas_items,
 )
 from lifesource.sources.hmart_weekly import HmartTexasWeeklyAdSource
-from lifesource.sources.status import get_hmart_texas_status, record_hmart_texas_inspection
+from lifesource.sources.status import (
+    add_hmart_texas_manual_asset,
+    get_hmart_texas_status,
+    record_hmart_texas_inspection,
+)
 from lifesource.sources.weekly_items import WeeklyAdItem, list_weekly_ad_items, replace_weekly_ad_items
 
 
@@ -28,6 +32,10 @@ class WeeklyAdItemPayload(BaseModel):
 
 class WeeklyAdItemsPayload(BaseModel):
     items: list[WeeklyAdItemPayload]
+
+
+class WeeklyAdAssetPayload(BaseModel):
+    asset_url: str
 
 
 def extract_hmart_texas_items_for_review(db_path: str) -> dict:
@@ -106,6 +114,13 @@ def create_sources_router(db_path: str) -> APIRouter:
             "item_count": len(items),
             "items": items,
         }
+
+    @router.post("/sources/hmart-texas/assets")
+    def add_hmart_texas_asset(payload: WeeklyAdAssetPayload):
+        try:
+            return add_hmart_texas_manual_asset(db_path, payload.asset_url)
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
 
     @router.post("/sources/hmart-texas/extract-items")
     def extract_hmart_texas_items_endpoint():

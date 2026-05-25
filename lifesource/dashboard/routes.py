@@ -7,7 +7,11 @@ from typing import Optional
 from lifesource.db import get_db
 from lifesource.api.sources import extract_hmart_texas_items_for_review
 from lifesource.sources.hmart_weekly import HmartTexasWeeklyAdSource
-from lifesource.sources.status import get_hmart_texas_status, record_hmart_texas_inspection
+from lifesource.sources.status import (
+    add_hmart_texas_manual_asset,
+    get_hmart_texas_status,
+    record_hmart_texas_inspection,
+)
 from lifesource.sources.weekly_items import list_weekly_ad_items
 
 templates = Jinja2Templates(directory=str(Path(__file__).parent.parent / "templates"))
@@ -243,6 +247,8 @@ def create_dashboard_router(db_path: str) -> APIRouter:
         changed: Optional[int] = Query(None),
         extracted: Optional[int] = Query(None),
         extract_status: Optional[str] = Query(None),
+        asset_added: Optional[int] = Query(None),
+        asset_error: Optional[int] = Query(None),
     ):
         check_result = None
         if checked is not None:
@@ -250,6 +256,11 @@ def create_dashboard_router(db_path: str) -> APIRouter:
         extract_result = None
         if extracted is not None:
             extract_result = {"status": extract_status or "unknown"}
+        asset_result = None
+        if asset_added is not None:
+            asset_result = {"status": "added"}
+        elif asset_error is not None:
+            asset_result = {"status": "rejected"}
         return _render(
             "sources.html",
             request,
@@ -257,6 +268,7 @@ def create_dashboard_router(db_path: str) -> APIRouter:
             hmart_items=list_weekly_ad_items(db_path, store="hmart", region="texas"),
             check_result=check_result,
             extract_result=extract_result,
+            asset_result=asset_result,
         )
 
     @router.post("/sources/hmart-texas/check")
@@ -274,6 +286,14 @@ def create_dashboard_router(db_path: str) -> APIRouter:
             f"/sources?extracted=1&extract_status={status}",
             status_code=303,
         )
+
+    @router.post("/sources/hmart-texas/assets")
+    def add_hmart_texas_source_asset(request: Request, asset_url: str = Form()):
+        try:
+            add_hmart_texas_manual_asset(db_path, asset_url)
+        except ValueError:
+            return RedirectResponse("/sources?asset_error=1", status_code=303)
+        return RedirectResponse("/sources?asset_added=1", status_code=303)
 
     @router.get("/plan")
     def shopping_plan(request: Request):

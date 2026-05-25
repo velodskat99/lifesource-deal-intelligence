@@ -22,6 +22,14 @@
 </div>
 {% endif %}
 
+{% if asset_result %}
+<div class="alert-banner">
+    <span class="alert-text">
+        Weekly ad asset {{ asset_result.status }}.
+    </span>
+</div>
+{% endif %}
+
 <section class="source-grid">
     <article class="source-panel">
         <div class="source-panel-header">
@@ -74,6 +82,14 @@
             </form>
             <a class="btn btn-ghost" href="{{ hmart_status.source_url }}" target="_blank" rel="noopener">Open Weekly Ad</a>
         </div>
+
+        <form class="source-manual-asset" method="post" action="/sources/hmart-texas/assets">
+            <label for="hmart-asset-url">Weekly ad image or PDF URL</label>
+            <div>
+                <input id="hmart-asset-url" name="asset_url" type="url" placeholder="https://..." required>
+                <button class="btn btn-ghost" type="submit">Trust Asset</button>
+            </div>
+        </form>
 
         {% if hmart_status.assets %}
         <div class="source-assets">
